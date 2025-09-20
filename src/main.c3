@@ -5,13 +5,13 @@ import std::io;
 fn int main(String[] args)
 {
     @pool() {
-        io::print(codegen::tgen("input", `
+        io::print(codegen::tgen("input", `Hello!
 {{ code }}
 int[] arr = { 3, 4, 5 };
 {{ end }}
 
 {{ foreach (i, num : arr) }}
-    #{ "%d => %d\n", i, num }
+    #{ "%d => %d", i, num }
 {{ end }}
 `, C3)!!);
     };

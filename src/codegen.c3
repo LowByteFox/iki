@@ -13,7 +13,7 @@ fn String? gen(Allocator alloc, String source, String content, Mode mode)
 {
     DString str_builder;
     List{bool} stack;
-    bool in_code = false;
+    usz in_code = 0;
     Lexer lex = { content, 0 };
     str_builder.init(alloc);
 
@@ -26,7 +26,7 @@ fn String? gen(Allocator alloc, String source, String content, Mode mode)
             switch (tok.type) {
             case TEXT_LITERAL:
             case EXPR_END:
-                if (in_code) {
+                if (in_code > 0) {
                     str_builder.append_chars((String) tok.view);
                 } else {
                     append_text(&str_builder, (String) tok.view, mode);
@@ -42,11 +42,12 @@ fn String? gen(Allocator alloc, String source, String content, Mode mode)
                 String trimmed = body.trim();
                 if (trimmed == "code") {
                     stack.push(false);
-                    in_code = true;
+                    in_code++;
                 } else if (trimmed == "end") {
                     bool end = stack.pop()!;
                     str_builder.append_chars(end ? "}\n" : "");
-                    in_code = false;
+
+                    if (in_code > 0) in_code--;
                 } else {
                     stack.push(true);
                     str_builder.append_chars(body);
@@ -116,9 +117,5 @@ fn void append_printf(DString *builder, String text, Mode mode) @local
 
 fn bool is_empty(String str)
 {
-    foreach (c : str) {
-        if (!ascii::is_space(c)) return false;
-    }
-
-    return true;
+    return str.count("\n") == str.len;
 }

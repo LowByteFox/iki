@@ -93,14 +93,3 @@ fn bool Token.equals(&self, Token other) @operator(==)
 {
     return self.view == other.view && self.type == other.type;
 }
-
-fn bool Token[].equals(&self, Token[] other)
-{
-    if (self.len != other.len) return false;
-
-    foreach (i, c : self) {
-        if (c != other[i]) return false;
-    }
-
-    return true;
-}
